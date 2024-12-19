@@ -1,0 +1,24 @@
+"Perhaps someday I'll crawl back home beaten, defeated. But not as long as I can make stories out of my heartbreak, beauty out of sorrow." - Sylvia Plath
+
+For this project, I wanted to recreate visual hallucinations. A few years ago, I experienced a very painful moment when a person I loved had to get admitted into a psychiatric hospital with a psychotic break after being kidnapped.  
+It was painful to not know if the person would recover, or how long it would take. During a hospital visit, we were talking about what was happening and I wanted to explain what the doctor had told us. When I googled "psicosis" (Spanish for psychosis), I noticed the Wikipedia page had a Starry Night painting on it. My friend said that the painting moved because she was having visual hallucinations at that time, and the vortexes seemed to induce them. 
+
+It made me think about mental illness, the dark moments people have to go through, the misunderstanding of society, but most importantly the resilience and determination to see the good even in those times, and the determination to overcome hardships and seeing above the problems to pursue our passions and appreciate our talents, even when we feel isolated, misunderstood, and lonely. 
+Van Gogh painted this while he was admitted at a psychiatric hospital, and it makes me think that maybe he was aware of his talents and wanted to highlight the visual hallucinations he could've been having at the moment. The technique to actually induce hallucinations in sensitive people is fascinating to me. I think this is also some sort of message of appreciation of himself, not only accepting his good and bad, but also enjoying those stars. It resulted in an invaluable painting whose message can trascend centuries. 
+
+After this experience, I felt I could connect with my friend's sorrow and recovery, as well as Van Gogh's suffering, illness, but also resilience and determination to continue to pursue his talents in the face of adversity.
+
+ I think it's a beautiful example of resilience and determination in the face of illness, suffering and alienation from society. My friend recovered after about a month.   
+ 
+
+////////////////////////
+CODE
+
+I copied code to generate the vortexes 
+I generated spirals with a class. I decided to give them random colors within a palette I selected from a picture I took of the painting at the MoMA. 
+I used a more orange palette for the top stars and a more blue one for the spirals in the middle with some if/else statements.
+I want to use little archs instead of circles in a second iteration of this work, and also make the leaves move back and forth slowly. I would also like to explore more functions to determine the speed functions to change the colors of the stars in a way more similar to hallucinations. 
+I went to the MoMA to take a picture of the painting
+
+
+

@@ -1,0 +1,13 @@
+{
+	"folders": [
+		{
+			"path": "."
+		},
+		{
+			"path": "../../Downloads/HelloWorld"
+		}
+	],
+	"settings": {
+		"liveServer.settings.multiRootWorkspaceName": "fun_zone"
+	}
+}

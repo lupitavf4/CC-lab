@@ -1,0 +1,16 @@
+Design process
+
+I started by drawing the faces I wanted, then did some math for the face to become mischievous as we approach the button. All the coordinates change as a function of the position of the mouse (of how close they are  to the upper-left corner).
+
+After the user gets close enough to the button, a "DON'T" sign appears, warning the user not to press the button. 
+
+If the user presses the button, then the button gets a bit smaller and chaos happens. A noisy robot appears in random positions in a way that we need to stop the code from compiling to stop it. 
+
+There is a robot, which I borrowed from my friend Seth Lukin, now in his second year here in DT MFA. He made a robot that makes robotic sounds using some functions to produce audios. 
+
+I had the code for his robot and just added it to mine in a way that it appears at random positions in the canvas a few moments after the user presses the button. I added his code as an additional file in this folder. 
+
+I have discovered math and analytical geometry are very useful in p5.js, even to make sounds. 
+
+
+
