@@ -1,0 +1,7 @@
+For this assignment I chose to make an animation of how time and planning goes for me in the morning. I was thinking of making a clock that could "distort" time depending on where it was measuring time, but I wasn't really satisfied with it and after speaking to a friend who has ADHD (attention deficit and hyperactivity disorder), like me, I realized it would be a good idea to represent some of that crippling time with my animation. 
+
+I plan on making an app with a strategic UI/UX design to inspire users to take action by generating a sense of urgency. 
+I realized creating the animation can be easy, but actually storing the information in a way that can be used by an app as a whole can be a bit more challenging. For today, I decided to keep it like this so far. 
+
+I have an explanative video about the app here: https://www.youtube.com/watch?v=VnKDPnlmUb0
+

@@ -1,0 +1,21 @@
+Lupita Vásquez Fabela
+
+My proposal is a game of horses catching treats. Each level represents a stage of my life and I use horses to describe it. 
+
+I start in Chihuahua with Pinto eating apples, and then I move to Mexico City, where Monet would get carrots, and then I move to NYC, where horses get some special treats sometimes, like peppermint candy (crazy, I know).  
+
+My reflection
+
+Making those games is nice and entertaining. Even though the time was limited, I still managed to create something fun that I want to continue playing. I am still not exactly satisfied, and will change the code in a way that allows for infinite levels. 
+I also want to add smoother transitions. Maybe not this week, but these are the changes I want to make in my game before including it in my portfolio.
+I also saw how important it is to use a compiler that auto saves for us and keeps a version history, so I will move to Github and stop using the editor.p5js.org for complex projects, because it's annoying to re-do the code if it doesn't get saved. I did some progress that didn't get saved, but I won't cry over spilt milk. 
+
+My next steps on the game before I add it to my portfolio are: 
+
+1. Adding transitions (a home page before each level that lasts a few seconds before the level starts)
+2. Adding sounds.
+3. Adding infinite levels (changing the code so that it allows for infinite levels)
+4. Save high scores under a username 
+5. When the horse gets out of the Canvas, I want to create a function to map where it is and add a visual cue so the player would know how to come back. 
+6. I want to add a "speed-up" function to make it more fun. 
+7. Maybe I can also add difficulties like "easy", "medium", and "hard" and the harder the level, the faster my horse goes. 

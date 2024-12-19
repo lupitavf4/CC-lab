@@ -1,0 +1,8 @@
+I decided to track how much money I spent on the subway over the course of a week, starting on a Monday. If you pay with the same card or electronic wallet, allegedly you will save money and get free trips. 
+
+
+Tracking this data has made me realize a few things: 
+
+- The system resets at a certain time on Mondays. 
+- I can get the savings even combining cards in my Apple Wallet.
+- I used the subway several times on Saturday and Sunday, but I only see one trip charged on each day, and the one on Sunday was 2.10 instead of the usual 2.9. It means at some point it stops charging you for tickets. 

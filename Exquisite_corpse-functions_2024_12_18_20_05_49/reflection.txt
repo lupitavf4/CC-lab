@@ -1,0 +1,7 @@
+I thought this week's assignment was going to be harder than it actually was. Using the functions proved to be really useful for the code integration. 
+
+I made every sketch separately, then made a function for each body part and added them to the integrated code of the whole character. 
+
+I must admit at first I didn't know which parameters I wanted to use in the functions to draw the body parts, but then I realized I had to translate and resize each one of the body parts, so I decided to include the parameters of the translate and scale functions into the parameters of the function. 
+
+I guess the new character is an evil cat with a mushroom body and nice Sonic legs. It could be pregnant Sonic's son. 
