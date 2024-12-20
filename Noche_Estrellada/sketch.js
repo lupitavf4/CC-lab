@@ -10,7 +10,7 @@ let palette =[];
 
 function preload() {
   // Carga la imagen de la noche estrellada (ajustar nombre si es necesario)
-  img = loadImage('noche_estrellada.jpeg');
+  img = loadImage('Noche_Estrellada/noche_estrellada.jpeg');
 }
 
 function setup() {
