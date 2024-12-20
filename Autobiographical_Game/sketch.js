@@ -50,59 +50,59 @@ let home_page;
 function preload() {
   
   ////Treats 
-  treat_apple = loadImage('images/treat_apple.png');
-  treat_carrot = loadImage('images/treat_carrot.png');
-  treat_peppermint = loadImage('images/treat_peppermint.png');
+  treat_apple = loadImage('Autobiographical_Game/images/treat_apple.png');
+  treat_carrot = loadImage('Autobiographical_Game/images/treat_carrot.png');
+  treat_peppermint = loadImage('Autobiographical_Game/images/treat_peppermint.png');
   
   ////My Character: Pinto, Bruce, Monet
   //Pinto
-  pinto_up = loadImage('images/pinto_up.png');
-  pinto_down = loadImage('images/pinto_down.png');
-  pinto_left = loadImage('images/pinto_left.png');
-  pinto_right = loadImage('images/pinto_right.png');
+  pinto_up = loadImage('Autobiographical_Game/images/pinto_up.png');
+  pinto_down = loadImage('Autobiographical_Game/images/pinto_down.png');
+  pinto_left = loadImage('Autobiographical_Game/images/pinto_left.png');
+  pinto_right = loadImage('Autobiographical_Game/images/pinto_right.png');
   
   //Monet
-  monet_up = loadImage('images/monet_up.png');
-  monet_down = loadImage('images/monet_down.png');
-  monet_left = loadImage('images/monet_left.png');
-  monet_right = loadImage('images/monet_right.png');
+  monet_up = loadImage('Autobiographical_Game/images/monet_up.png');
+  monet_down = loadImage('Autobiographical_Game/images/monet_down.png');
+  monet_left = loadImage('Autobiographical_Game/images/monet_left.png');
+  monet_right = loadImage('Autobiographical_Game/images/monet_right.png');
   
   //Bruce
-  bruce_up = loadImage('images/bruce_up.png');
-  bruce_down = loadImage('images/bruce_down.png');
-  bruce_left = loadImage('images/bruce_left.png');
-  bruce_right = loadImage('images/bruce_right.png');
+  bruce_up = loadImage('Autobiographical_Game/images/bruce_up.png');
+  bruce_down = loadImage('Autobiographical_Game/images/bruce_down.png');
+  bruce_left = loadImage('Autobiographical_Game/images/bruce_left.png');
+  bruce_right = loadImage('Autobiographical_Game/images/bruce_right.png');
   
   ////Horses 
-  generic_horse_1_up = loadImage('images/generic_horse1_up.png');
-  generic_horse_1_down = loadImage('images/generic_horse1_down.png');
-  generic_horse_1_left = loadImage('images/generic_horse1_left.png');
-  generic_horse_1_right = loadImage('images/generic_horse1_right.png');
+  generic_horse_1_up = loadImage('Autobiographical_Game/images/generic_horse1_up.png');
+  generic_horse_1_down = loadImage('Autobiographical_Game/images/generic_horse1_down.png');
+  generic_horse_1_left = loadImage('Autobiographical_Game/images/generic_horse1_left.png');
+  generic_horse_1_right = loadImage('Autobiographical_Game/images/generic_horse1_right.png');
   
-  generic_horse_2_up = loadImage('images/generic_horse_2_up.png');
-  generic_horse_2_down = loadImage('images/generic_horse_2_down.png');
-  generic_horse_2_left = loadImage('images/generic_horse_2_left.png');
-  generic_horse_2_right = loadImage('images/generic_horse_2_right.png');
+  generic_horse_2_up = loadImage('Autobiographical_Game/images/generic_horse_2_up.png');
+  generic_horse_2_down = loadImage('Autobiographical_Game/images/generic_horse_2_down.png');
+  generic_horse_2_left = loadImage('Autobiographical_Game/images/generic_horse_2_left.png');
+  generic_horse_2_right = loadImage('Autobiographical_Game/images/generic_horse_2_right.png');
   
   ////Home Screen
-  home_page = loadImage('images/home_image1.png');
+  home_page = loadImage('Autobiographical_Game/images/home_image1.png');
   
   ////Level Screens 
-  nyc_start = loadImage('images/nyc_start.png');
-  cdmx_start = loadImage('images/cdmx_start.png');
-  chihuahua_start = loadImage('images/chihuahua_start.png');
+  nyc_start = loadImage('Autobiographical_Game/images/nyc_start.png');
+  cdmx_start = loadImage('Autobiographical_Game/images/cdmx_start.png');
+  chihuahua_start = loadImage('Autobiographical_Game/images/chihuahua_start.png');
   
   ////Backgrounds
-  background_chihuahua = loadImage('images/background_chihuahua.png');
-  background_cdmx = loadImage('images/background_cdmx.png');
-  background_nyc = loadImage('images/background_nyc.png');
+  background_chihuahua = loadImage('Autobiographical_Game/images/background_chihuahua.png');
+  background_cdmx = loadImage('Autobiographical_Game/images/background_cdmx.png');
+  background_nyc = loadImage('Autobiographical_Game/images/background_nyc.png');
   
   ////
   
   ////Game Over screens 
-  gameOver_chihuahua = loadImage('images/gameOver_chihuahua.png');
-  gameOver_cdmx = loadImage('images/gameOver_cdmx_final.png'); 
-  gameOver_nyc = loadImage('images/gameOver_nyc_final.png');
+  gameOver_chihuahua = loadImage('Autobiographical_Game/images/gameOver_chihuahua.png');
+  gameOver_cdmx = loadImage('Autobiographical_Game/images/gameOver_cdmx_final.png'); 
+  gameOver_nyc = loadImage('Autobiographical_Game/images/gameOver_nyc_final.png');
   
   
 }
