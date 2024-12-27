@@ -92,7 +92,7 @@ class Particle {
 
   update() {
     // Movimiento de las partículas en torno al centro del vórtice
-    this.angle += this.speed;
+    this.angle += this.speed/15;
     this.pos = createVector(
       this.vortexCenter.x + cos(this.angle) * this.radius,
       this.vortexCenter.y + sin(this.angle) * this.radius
