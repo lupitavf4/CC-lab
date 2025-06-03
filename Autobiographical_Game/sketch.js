@@ -137,15 +137,15 @@ function displayWelcomeScreen() {
   
   // Add welcome text overlay
   fill(255, 255, 255, 200);
-  rect(50, 150, 300, 100);
+  rect(50, 250, 300, 100);
   
   fill(0);
   textAlign(CENTER, CENTER);
   textSize(24);
-  text("HORSE TREAT COLLECTOR", width/2, 180);
+  text("HORSE TREAT COLLECTOR", width/2, 280);
   textSize(16);
-  text("Collect treats while avoiding horses!", width/2, 210);
-  text("Press SPACE to start", width/2, 230);
+  text("Collect treats while avoiding horses!", width/2, 310);
+  text("Press SPACE to start", width/2, 330);
   
   if (keyIsPressed && key === ' ') {
     gameState = "transition";
