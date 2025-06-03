@@ -1,8 +1,8 @@
 ////Variables to control the levels 
 let level = 0;
-let showTransition = false;
+let gameState = "welcome"; // "welcome", "transition", "playing", "gameOver"
 let transitionTimer = 0;
-let transitionDuration = 120; // 2 seconds at 60fps
+let transitionDuration = 120; // frames to show transition
 
 ////My character
 let myCharacter;
@@ -99,184 +99,207 @@ function preload() {
 function setup() {
   textFont(font_bronco);
   createCanvas(400, 400);
-  myCharacter = new MainCharacter(40, 40, 5);
+  initializeGame();
+}
+
+function initializeGame() {
+  myCharacter = new MainCharacter(200, 200, 5);
   myHorse0 = new Horse1(39, 140, 2);
   myHorse1 = new Horse2(39, 180, 3);
   myHorse2 = new Horse1(39, 220, 5);
   myHorse3 = new Horse1(39, 300, 4);
   
   currentTreat = new Treat(); // Create the first treat
-  
-  // Add the first treat to the array
-  treats.push(currentTreat);
+  treats = []; // Clear treats array
+  treats.push(currentTreat); // Add the first treat to the array
 }
 
 function draw() {
-  if (!gameOver) {
-    if (showTransition) {
+  switch(gameState) {
+    case "welcome":
+      displayWelcomeScreen();
+      break;
+    case "transition":
       displayTransition();
-      transitionTimer++;
-      if (transitionTimer >= transitionDuration) {
-        showTransition = false;
-        transitionTimer = 0;
-      }
-    } else {
-      // Call the function to handle the current level
-      handleLevel();
-      
-      myCharacter.update();
-      myCharacter.display();
-      myCharacter.body();
-      myHorse0.update();
-      myHorse0.display();
-      distance0 = dist(myCharacter.x, myCharacter.y, myHorse0.x, myHorse0.y);
-      distance1 = dist(myCharacter.x, myCharacter.y, myHorse1.x, myHorse1.y);
-      distance2 = dist(myCharacter.x, myCharacter.y, myHorse2.x, myHorse2.y);
-      distance3 = dist(myCharacter.x, myCharacter.y, myHorse3.x, myHorse3.y);
-      
-
-      // Check if the current treat is caught
-      if (currentTreat.isCaught(myCharacter)) {
-        // If caught, create a new treat and place it around the arena
-        treats.pop(currentTreat);
-        currentTreat = new Treat();
-        treats.push(currentTreat); // Add to the array
-        
-        // Increment the score
-        score1++;
-        
-        // Check if we need to show transition to next level
-        checkLevelTransition();
-
-        // Optionally, you could add sound or visual effects here to indicate scoring
-      }
-
-      // Display all treats
-      for (let treat of treats) {
-        treat.display();
-        treat.body();
-      }
-
-      // Display the score
-      displayScore();
-    }
-  }
-  else {
-    displayGameOver();
+      break;
+    case "playing":
+      playGame();
+      break;
+    case "gameOver":
+      displayGameOver();
+      break;
   }
 }
 
-function checkLevelTransition() {
-  let newLevel = calculateLevel(score1);
-  if (newLevel > level && newLevel <= 99) {
-    showTransition = true;
+function displayWelcomeScreen() {
+  background(home_page);
+  
+  // Add welcome text overlay
+  fill(255, 255, 255, 200);
+  rect(50, 150, 300, 100);
+  
+  fill(0);
+  textAlign(CENTER, CENTER);
+  textSize(24);
+  text("HORSE TREAT COLLECTOR", width/2, 180);
+  textSize(16);
+  text("Collect treats while avoiding horses!", width/2, 210);
+  text("Press SPACE to start", width/2, 230);
+  
+  if (keyIsPressed && key === ' ') {
+    gameState = "transition";
+    level = 1;
     transitionTimer = 0;
+    score1 = 0;
+    gameOver = false;
+    initializeGame();
   }
-}
-
-function calculateLevel(score) {
-  if (score < 10) return 1;
-  else if (score < 20) return 2;
-  else if (score < 30) return 3;
-  else return Math.min(4 + Math.floor((score - 30) / 5), 99);
 }
 
 function displayTransition() {
-  let nextLevel = calculateLevel(score1);
-  
-  // Choose transition image based on level ranges
-  if (nextLevel <= 33) {
+  // Choose background based on level
+  if (level <= 33) {
     background(chihuahua_start);
-  } else if (nextLevel <= 66) {
+  } else if (level <= 66) {
     background(cdmx_start);
   } else {
     background(nyc_start);
   }
   
-  // Add transition text
-  fill(255);
-  textSize(48);
-  textAlign(CENTER, CENTER);
-  text("LEVEL " + nextLevel, width / 2, height / 2 - 50);
+  // Add level info overlay
+  fill(0, 0, 0, 150);
+  rect(0, 0, width, height);
   
-  textSize(24);
-  text("Get Ready!", width / 2, height / 2 + 50);
+  fill(255);
+  textAlign(CENTER, CENTER);
+  textSize(48);
+  text("LEVEL " + level, width/2, height/2 - 30);
+  
+  textSize(20);
+  let horsesInLevel = getHorsesInLevel(level);
+  text(horsesInLevel + " horses to avoid!", width/2, height/2 + 20);
+  
+  textSize(16);
+  text("Get ready...", width/2, height/2 + 50);
+  
+  transitionTimer++;
+  if (transitionTimer >= transitionDuration) {
+    gameState = "playing";
+    transitionTimer = 0;
+  }
+}
+
+function playGame() {
+  if (!gameOver) {
+    handleLevel();
+    
+    myCharacter.update();
+    myCharacter.display();
+    myCharacter.body();
+    
+    // Update horses based on current level
+    myHorse0.update();
+    myHorse0.display();
+    distance0 = dist(myCharacter.x, myCharacter.y, myHorse0.x, myHorse0.y);
+    
+    if (level >= 2) {
+      myHorse1.update();
+      myHorse1.display();
+      distance1 = dist(myCharacter.x, myCharacter.y, myHorse1.x, myHorse1.y);
+    }
+    
+    if (level >= 3) {
+      myHorse2.update();
+      myHorse2.display();
+      distance2 = dist(myCharacter.x, myCharacter.y, myHorse2.x, myHorse2.y);
+    }
+    
+    if (level >= 4) {
+      myHorse3.update();
+      myHorse3.display();
+      distance3 = dist(myCharacter.x, myCharacter.y, myHorse3.x, myHorse3.y);
+    }
+
+    // Check if the current treat is caught
+    if (currentTreat.isCaught(myCharacter)) {
+      treats.pop();
+      currentTreat = new Treat();
+      treats.push(currentTreat);
+      score1++;
+
+      // Check for level progression
+      if (score1 % 10 === 0 && score1 > 0) {
+        if (level < 99) {
+          level++;
+          gameState = "transition";
+          transitionTimer = 0;
+        }
+      }
+    }
+
+    // Display all treats
+    for (let treat of treats) {
+      treat.display();
+      treat.body();
+    }
+
+    displayScore();
+    displayLevel();
+  } else {
+    gameState = "gameOver";
+  }
 }
 
 function handleLevel() {
-  let newLevel = calculateLevel(score1);
-  level = newLevel;
-  
-  // Determine background based on level ranges
-  let backgroundImg;
+  // Choose background based on level range
   if (level <= 33) {
-    backgroundImg = background_chihuahua;
+    background(background_chihuahua);
   } else if (level <= 66) {
-    backgroundImg = background_cdmx;
+    background(background_cdmx);
   } else {
-    backgroundImg = background_nyc;
+    background(background_nyc);
   }
   
-  background(backgroundImg);
-  
-  // Display level info
-  textSize(32);
-  fill(0);
-  textAlign(LEFT, TOP);
-  text('Level ' + level, 10, 10);
-  
-  // Collision detection and horse activation based on level
-  let activeHorses = Math.min(level, 4);
-  
-  // Always check collision with horse0
+  // Check collisions based on active horses
   if (distance0 < 30) {
     gameOver = true;
   }
   
-  // Activate additional horses based on level
-  if (activeHorses >= 2) {
-    myHorse1.display(); 
-    myHorse1.update();
-    if (distance1 < 30) {
-      gameOver = true;
-    }
+  if (level >= 2 && distance1 < 30) {
+    gameOver = true;
   }
   
-  if (activeHorses >= 3) {
-    myHorse2.display();
-    myHorse2.update();
-    if (distance2 < 30) {
-      gameOver = true;
-    }
+  if (level >= 3 && distance2 < 30) {
+    gameOver = true;
   }
   
-  if (activeHorses >= 4) {
-    myHorse3.display();
-    myHorse3.update();
-    if (distance3 < 30) {
-      gameOver = true;
-    }
+  if (level >= 4 && distance3 < 30) {
+    gameOver = true;
   }
+}
+
+function getHorsesInLevel(lvl) {
+  if (lvl === 1) return 1;
+  if (lvl >= 2 && lvl < 3) return 2;
+  if (lvl >= 3 && lvl < 4) return 3;
+  if (lvl >= 4) return 4;
+  return 1;
 }
 
 class MainCharacter {
   constructor(startPosX, startPosY, charSpeed) {
     this.x = startPosX;
     this.y = startPosY;
-    
-    this.speed = 1.5*charSpeed;
-    
+    this.speed = 1.5 * charSpeed;
     this.size = 20;
-    
     this.fillColor = color(255);
   }
   
   move(amtX, amtY) {
-    let newX = this.x + amtX * this.speed;
-    let newY = this.y + amtY * this.speed;
+    let newX = this.x + (amtX * this.speed);
+    let newY = this.y + (amtY * this.speed);
     
-    // Boundary checking - keep character within canvas bounds
-    // Account for sprite size (30 pixels on each side based on image rendering)
+    // Boundary checking - keep character within canvas
     if (newX >= 30 && newX <= width - 30) {
       this.x = newX;
     }
@@ -287,7 +310,7 @@ class MainCharacter {
   
   update() {
     if (keyIsDown(LEFT_ARROW)) {
-    this.move(-1, 0);
+      this.move(-1, 0);
     }
     if (keyIsDown(RIGHT_ARROW)) {
       this.move(1, 0);
@@ -301,73 +324,50 @@ class MainCharacter {
   }
   
   body() {
-    // Character sprite changes based on level ranges
-    if (level <= 33){
-      if (keyIsDown(DOWN_ARROW)) {
-      image(pinto_down, this.x-30, this.y-30, pinto_down.width*.4, pinto_down.height*.4);
+    let characterType = getCharacterType(level);
+    let currentSprite;
+    
+    // Determine which sprite set to use
+    if (characterType === "pinto") {
+      if (keyIsDown(DOWN_ARROW)) currentSprite = pinto_down;
+      else if (keyIsDown(UP_ARROW)) currentSprite = pinto_up;
+      else if (keyIsDown(LEFT_ARROW)) currentSprite = pinto_left;
+      else if (keyIsDown(RIGHT_ARROW)) currentSprite = pinto_right;
+      else currentSprite = pinto_down;
+    } else if (characterType === "monet") {
+      if (keyIsDown(DOWN_ARROW)) currentSprite = monet_down;
+      else if (keyIsDown(UP_ARROW)) currentSprite = monet_up;
+      else if (keyIsDown(LEFT_ARROW)) currentSprite = monet_left;
+      else if (keyIsDown(RIGHT_ARROW)) currentSprite = monet_right;
+      else currentSprite = monet_down;
+    } else { // bruce
+      if (keyIsDown(DOWN_ARROW)) currentSprite = bruce_down;
+      else if (keyIsDown(UP_ARROW)) currentSprite = bruce_up;
+      else if (keyIsDown(LEFT_ARROW)) currentSprite = bruce_left;
+      else if (keyIsDown(RIGHT_ARROW)) currentSprite = bruce_right;
+      else currentSprite = bruce_down;
     }
-    else if (keyIsDown(UP_ARROW)) {
-      image(pinto_up, this.x-30, this.y-30, pinto_up.width*.4, pinto_up.height*.4);
-    }
-    else if (keyIsDown(LEFT_ARROW)) {
-    image(pinto_left, this.x-30, this.y-30, pinto_left.width*.4, pinto_left.height*.4);
-    }
-    else if (keyIsDown(RIGHT_ARROW)) {
-      image(pinto_right, this.x-30, this.y-30, pinto_right.width*.4, pinto_right.height*.4);
-    }
-    else {
-      image(pinto_down, this.x-30, this.y-30, pinto_down.width*.4, pinto_down.height*.4);
-    }
-    }
-    else if (level <= 66){
-      if (keyIsDown(DOWN_ARROW)) {
-      image(monet_down, this.x-30, this.y-30, monet_down.width*.4, monet_down.height*.4);
-    }
-    else if (keyIsDown(UP_ARROW)) {
-      image(monet_up, this.x-30, this.y-30, monet_up.width*.4, monet_up.height*.4);
-    }
-    else if (keyIsDown(LEFT_ARROW)) {
-    image(monet_left, this.x-30, this.y-30, monet_left.width*.4, monet_left.height*.4);
-    }
-    else if (keyIsDown(RIGHT_ARROW)) {
-      image(monet_right, this.x-30, this.y-30, monet_right.width*.4, monet_right.height*.4);
-    }
-    else {
-      image(monet_down, this.x-30, this.y-30, monet_down.width*.4, monet_down.height*.4);
-    }
-    }
-    else {
-      if (keyIsDown(DOWN_ARROW)) {
-      image(bruce_down, this.x-30, this.y-30, bruce_down.width*.4, bruce_down.height*.4);
-    }
-    else if (keyIsDown(UP_ARROW)) {
-      image(bruce_up, this.x-30, this.y-30, bruce_up.width*.4, bruce_up.height*.4);
-    }
-    else if (keyIsDown(LEFT_ARROW)) {
-    image(bruce_left, this.x-30, this.y-30, bruce_left.width*.4, bruce_left.height*.4);
-    }
-    else if (keyIsDown(RIGHT_ARROW)) {
-      image(bruce_right, this.x-30, this.y-30, bruce_right.width*.4, bruce_right.height*.4);
-    }
-    else {
-      image(bruce_down, this.x-30, this.y-30, bruce_down.width*.4, bruce_down.height*.4);
-    }
-    }
+    
+    image(currentSprite, this.x-30, this.y-30, currentSprite.width*.4, currentSprite.height*.4);
   }
   
   display() {
+    // Display method can be used for debug purposes if needed
   }
+}
+
+function getCharacterType(lvl) {
+  if (lvl <= 33) return "pinto";
+  if (lvl <= 66) return "monet";
+  return "bruce";
 }
 
 class Horse1 {
   constructor(startPosX, startPosY, charSpeed) {
     this.x = startPosX;
     this.y = startPosY;
-    
-    this.speed = charSpeed;
-    
+    this.speed = charSpeed + (level * 0.1); // Horses get faster with level
     this.size = 20;
-    
     this.fillColor = color(255);
   }
   
@@ -381,21 +381,22 @@ class Horse1 {
       this.move(-1, 0);
       image(generic_horse_1_left, this.x-30, this.y-30, generic_horse_1_left.width*.4, generic_horse_1_left.height*.4);
     }
-    if (this.y>360) {
+    if (this.y > 360) {
       this.move(1, 0);
-     image(generic_horse_1_right, this.x-30, this.y-30, generic_horse_1_right.width*.4, generic_horse_1_right.height*.4);
+      image(generic_horse_1_right, this.x-30, this.y-30, generic_horse_1_right.width*.4, generic_horse_1_right.height*.4);
     }
-    if (this.x>360) {
+    if (this.x > 360) {
       this.move(0, -1);
-     image(generic_horse_1_up, this.x-30, this.y-30, generic_horse_1_up.width*.4, generic_horse_1_up.height*.4);
+      image(generic_horse_1_up, this.x-30, this.y-30, generic_horse_1_up.width*.4, generic_horse_1_up.height*.4);
     }
-    if (this.x<40) {
+    if (this.x < 40) {
       this.move(0, 1);
       image(generic_horse_1_down, this.x-30, this.y-30, generic_horse_1_down.width*.4, generic_horse_1_down.height*.4);
     }
   }
   
   display() {
+    // Display handled in update for this class
   }
 }
 
@@ -403,7 +404,7 @@ class Horse2 {
   constructor(startPosX, startPosY, charSpeed) {
     this.x = startPosX;
     this.y = startPosY;
-    this.speed = charSpeed;
+    this.speed = charSpeed + (level * 0.1); // Horses get faster with level
     this.size = 20;
     this.fillColor = color(255);
   }
@@ -418,55 +419,53 @@ class Horse2 {
       this.move(-1, 0);
       image(generic_horse_2_left, this.x-30, this.y-30, generic_horse_2_left.width*.4, generic_horse_2_left.height*.4);
     }
-    if (this.y>360) {
+    if (this.y > 360) {
       this.move(1, 0);
-     image(generic_horse_2_right, this.x-30, this.y-30, generic_horse_2_right.width*.4, generic_horse_2_right.height*.4);
+      image(generic_horse_2_right, this.x-30, this.y-30, generic_horse_2_right.width*.4, generic_horse_2_right.height*.4);
     }
-    if (this.x>360) {
+    if (this.x > 360) {
       this.move(0, -1);
-     image(generic_horse_2_up, this.x-30, this.y-30, generic_horse_2_up.width*.4, generic_horse_2_up.height*.4);
+      image(generic_horse_2_up, this.x-30, this.y-30, generic_horse_2_up.width*.4, generic_horse_2_up.height*.4);
     }
-    if (this.x<40) {
+    if (this.x < 40) {
       this.move(0, 1);
       image(generic_horse_2_down, this.x-30, this.y-30, generic_horse_2_down.width*.4, generic_horse_2_down.height*.4);
     }
   }
   
   display() {
+    // Display handled in update for this class
   }
 }
 
 // Treat class to manage treat creation and interaction
 class Treat {
   constructor() {
-    // Randomly place treat around the perimeter of the arena
     r1 = random(10, 60);
     r2 = random(320, 390);
-    r_array.push(r1);
-    r_array.push(r2);
+    r_array = [r1, r2];
     
     this.x = random(20, 380);
     
     // Make sure treats are placed around the edges
-    if ((this.x > 60) || (this.x < 320)) {
-      this.y = random(r_array); // Left side
+    if ((this.x > 60) && (this.x < 320)) {
+      this.y = random(r_array);
     } else {
-      this.y = random(20, 380); // Right side
+      this.y = random(20, 380);
     } 
     
-    this.size = 10; // Treat size
+    this.size = 10;
   }
   
   body() {
-    if (level <= 33) {
-    image(treat_apple, this.x-20, this.y-20, treat_apple.width*.1, treat_apple.height*.1);
-  }
-  else if (level <= 66) {
-    image(treat_carrot, this.x-12, this.y-12, treat_carrot.width*.02, treat_carrot.height*.02);
-  }
-  else {
-    image(treat_peppermint, this.x-20, this.y-20, treat_peppermint.width*.1, treat_peppermint.height*.1);
-  }
+    let treatType = getTreatType(level);
+    if (treatType === "apple") {
+      image(treat_apple, this.x-20, this.y-20, treat_apple.width*.1, treat_apple.height*.1);
+    } else if (treatType === "carrot") {
+      image(treat_carrot, this.x-12, this.y-12, treat_carrot.width*.02, treat_carrot.height*.02);
+    } else {
+      image(treat_peppermint, this.x-20, this.y-20, treat_peppermint.width*.1, treat_peppermint.height*.1);
+    }
   }
   
   display() {
@@ -475,53 +474,60 @@ class Treat {
   }
   
   isCaught(myCharacter) {
-    distanceT = dist(myCharacter.x, myCharacter.y, currentTreat.x, currentTreat.y);
-  
-    if ((distanceT < 30)) {
-      return true;
-    }
-    return false;
+    distanceT = dist(myCharacter.x, myCharacter.y, this.x, this.y);
+    return (distanceT < 30);
   }
 }
 
-// Function to display the score
+function getTreatType(lvl) {
+  if (lvl <= 33) return "apple";
+  if (lvl <= 66) return "carrot";
+  return "peppermint";
+}
+
 function displayScore() {
   fill(255);
-  textSize(24);
+  textSize(20);
   textAlign(RIGHT, TOP);
-  text("Score: " + score1, width - 10, 50); // Display score at the top right corner
+  text("Score: " + score1, width - 20, 20);
+}
+
+function displayLevel() {
+  fill(255);
+  textSize(20);
+  textAlign(LEFT, TOP);
+  text("Level: " + level, 20, 20);
 }
 
 function displayGameOver() {
-  // Choose game over background based on level ranges
-  let gameOverImg;
+  // Choose game over screen based on level
   if (level <= 33) {
-    gameOverImg = gameOver_chihuahua;
+    background(gameOver_chihuahua);
   } else if (level <= 66) {
-    gameOverImg = gameOver_cdmx;
+    background(gameOver_cdmx);
   } else {
-    gameOverImg = gameOver_nyc;
+    background(gameOver_nyc);
   }
   
-  background(gameOverImg);
+  fill(255, 255, 255, 200);
+  rect(50, 100, 300, 200);
   
   fill(0);
-  textSize(32);
   textAlign(CENTER, CENTER);
-  text("GAME OVER", width / 2, height / 2 - 100);
-  text("Level Reached: " + level, width / 2, height / 2 - 50);
-  text("Score: " + score1, width / 2, height / 2);
+  textSize(32);
+  text("GAME OVER", width / 2, 150);
+  
+  textSize(24);
+  text("Final Score: " + score1, width / 2, 190);
+  text("Level Reached: " + level, width / 2, 220);
   
   textSize(16);
-  text("Press Space to Restart", width / 2, height / 2 + 100);
+  text("Press SPACE to return to menu", width / 2, 260);
   
-  if ((gameOver) && (keyIsDown(32))) {
-    score1 = 0;
+  if (keyIsPressed && key === ' ') {
+    gameState = "welcome";
     level = 0;
-    gameOver = false; 
-    showTransition = false;
-    transitionTimer = 0;
-    myCharacter.x = 200;
-    myCharacter.y = 200;
+    score1 = 0;
+    gameOver = false;
   }
 }
