@@ -522,7 +522,7 @@ function displayGameOver() {
   text("Level Reached: " + level, width / 2, 220);
   
   textSize(16);
-  text("Press SPACE to return to menu", width / 2, 260);
+  text("Press SPACE to restart", width / 2, 260);
   
   if (keyIsPressed && key === ' ') {
     gameState = "welcome";
