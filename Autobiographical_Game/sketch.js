@@ -1,5 +1,8 @@
 ////Variables to control the levels 
 let level = 0;
+let showTransition = false;
+let transitionTimer = 0;
+let transitionDuration = 120; // 2 seconds at 60fps
 
 ////My character
 let myCharacter;
@@ -20,9 +23,6 @@ let currentTreat; // To store the current treat to be caught
 let distance0, distance1, distance2, distance3, distanceT;
 let score1 = 0; // Initialize the score
 let gameOver = false;
-let showingTransition = false; // New variable for transition state
-let transitionTimer = 0; // Timer for transition duration
-let transitionDuration = 120; // 2 seconds at 60fps
 
 ////Variables for images
 let horsey;
@@ -34,22 +34,14 @@ let generic_horse_1_up, generic_horse_1_down, generic_horse_1_left, generic_hors
 let generic_horse_2_up, generic_horse_2_down, generic_horse_2_left, generic_horse_2_right;
 
 let background_chihuahua, background_cdmx, background_nyc;
-let backgroundImages = []; // Array to store all background images
-
 let treat_apple, treat_carrot, treat_peppermint;
-
 let gameOver_chihuahua, gameOver_cdmx, gameOver_nyc;
-
 let nyc_start, chihuahua_start, cdmx_start;
-let transitionImages = []; // Array to store transition images
-
 let home_page; 
-
 let font_bronco;
 
 function preload() {
   font_bronco = loadFont('Autobiographical_Game/images/BroncoPersonalUse.ttf');
-  
   ////Treats 
   treat_apple = loadImage('Autobiographical_Game/images/treat_apple.png');
   treat_carrot = loadImage('Autobiographical_Game/images/treat_carrot.png');
@@ -88,7 +80,7 @@ function preload() {
   ////Home Screen
   home_page = loadImage('Autobiographical_Game/images/home_image1.png');
   
-  ////Transition Screens 
+  ////Level Screens 
   nyc_start = loadImage('Autobiographical_Game/images/nyc_start.png');
   cdmx_start = loadImage('Autobiographical_Game/images/cdmx_start.png');
   chihuahua_start = loadImage('Autobiographical_Game/images/chihuahua_start.png');
@@ -107,11 +99,6 @@ function preload() {
 function setup() {
   textFont(font_bronco);
   createCanvas(400, 400);
-  
-  // Initialize background and transition image arrays
-  backgroundImages = [background_chihuahua, background_cdmx, background_nyc];
-  transitionImages = [chihuahua_start, cdmx_start, nyc_start];
-  
   myCharacter = new MainCharacter(40, 40, 5);
   myHorse0 = new Horse1(39, 140, 2);
   myHorse1 = new Horse2(39, 180, 3);
@@ -126,8 +113,13 @@ function setup() {
 
 function draw() {
   if (!gameOver) {
-    if (showingTransition) {
+    if (showTransition) {
       displayTransition();
+      transitionTimer++;
+      if (transitionTimer >= transitionDuration) {
+        showTransition = false;
+        transitionTimer = 0;
+      }
     } else {
       // Call the function to handle the current level
       handleLevel();
@@ -145,8 +137,6 @@ function draw() {
 
       // Check if the current treat is caught
       if (currentTreat.isCaught(myCharacter)) {
-        let previousLevel = level;
-        
         // If caught, create a new treat and place it around the arena
         treats.pop(currentTreat);
         currentTreat = new Treat();
@@ -155,12 +145,8 @@ function draw() {
         // Increment the score
         score1++;
         
-        // Check if level changed and show transition
-        let newLevel = calculateLevel(score1);
-        if (newLevel != previousLevel && newLevel <= 99) {
-          showingTransition = true;
-          transitionTimer = 0;
-        }
+        // Check if we need to show transition to next level
+        checkLevelTransition();
 
         // Optionally, you could add sound or visual effects here to indicate scoring
       }
@@ -180,89 +166,94 @@ function draw() {
   }
 }
 
-function calculateLevel(score) {
-  if (score < 10) return 1;
-  else if (score < 20) return 2;
-  else if (score < 30) return 3;
-  else return Math.min(Math.floor(score / 10) + 1, 99);
-}
-
-function displayTransition() {
-  transitionTimer++;
-  
-  // Choose random transition image
-  let transitionImg = random(transitionImages);
-  background(transitionImg);
-  
-  fill(255);
-  textSize(48);
-  textAlign(CENTER, CENTER);
-  text(`LEVEL ${level}`, width / 2, height / 2);
-  
-  fill(255, 255, 255, 150);
-  textSize(24);
-  text("GET READY!", width / 2, height / 2 + 60);
-  
-  if (transitionTimer >= transitionDuration) {
-    showingTransition = false;
+function checkLevelTransition() {
+  let newLevel = calculateLevel(score1);
+  if (newLevel > level && newLevel <= 99) {
+    showTransition = true;
     transitionTimer = 0;
   }
 }
 
-function handleLevel() {
-  console.log(score1);
-  let previousLevel = level;
-  level = calculateLevel(score1);
+function calculateLevel(score) {
+  if (score < 10) return 1;
+  else if (score < 20) return 2;
+  else if (score < 30) return 3;
+  else return Math.min(4 + Math.floor((score - 30) / 5), 99);
+}
+
+function displayTransition() {
+  let nextLevel = calculateLevel(score1);
   
-  // Choose random background for levels 1-99
-  let backgroundImg = random(backgroundImages);
-  
-  if (level == 0) {
-    background(home_page);
+  // Choose transition image based on level ranges
+  if (nextLevel <= 33) {
+    background(chihuahua_start);
+  } else if (nextLevel <= 66) {
+    background(cdmx_start);
   } else {
-    background(backgroundImg);
-    
-    // Display level text
-    textSize(32);
-    fill(255);
-    stroke(0);
-    strokeWeight(2);
-    textAlign(LEFT, TOP);
-    text(`Level ${level}`, 20, 20);
-    noStroke();
+    background(nyc_start);
   }
   
-  // Game logic based on level ranges
-  if (level >= 1 && level < 10) {
-    // Levels 1-9: Only myHorse0 active
-    if (distance0 < 30) {
-      gameOver = true;
-    }
-  } else if (level >= 10 && level < 20) {
-    // Levels 10-19: myHorse0 and myHorse1 active
+  // Add transition text
+  fill(255);
+  textSize(48);
+  textAlign(CENTER, CENTER);
+  text("LEVEL " + nextLevel, width / 2, height / 2 - 50);
+  
+  textSize(24);
+  text("Get Ready!", width / 2, height / 2 + 50);
+}
+
+function handleLevel() {
+  let newLevel = calculateLevel(score1);
+  level = newLevel;
+  
+  // Determine background based on level ranges
+  let backgroundImg;
+  if (level <= 33) {
+    backgroundImg = background_chihuahua;
+  } else if (level <= 66) {
+    backgroundImg = background_cdmx;
+  } else {
+    backgroundImg = background_nyc;
+  }
+  
+  background(backgroundImg);
+  
+  // Display level info
+  textSize(32);
+  fill(0);
+  textAlign(LEFT, TOP);
+  text('Level ' + level, 10, 10);
+  
+  // Collision detection and horse activation based on level
+  let activeHorses = Math.min(level, 4);
+  
+  // Always check collision with horse0
+  if (distance0 < 30) {
+    gameOver = true;
+  }
+  
+  // Activate additional horses based on level
+  if (activeHorses >= 2) {
     myHorse1.display(); 
     myHorse1.update();
-    if ((distance0 < 30) || (distance1 < 30)) {
+    if (distance1 < 30) {
       gameOver = true;
     }
-  } else if (level >= 20 && level < 30) {
-    // Levels 20-29: myHorse0, myHorse1, and myHorse2 active
-    myHorse1.display();
+  }
+  
+  if (activeHorses >= 3) {
     myHorse2.display();
-    myHorse1.update();
     myHorse2.update();
-    if ((distance0 < 30) || (distance1 < 30) || (distance2 < 30)) {
+    if (distance2 < 30) {
       gameOver = true;
     }
-  } else if (level >= 30) {
-    // Levels 30-99: All horses active
-    myHorse1.display();
-    myHorse2.display();
+  }
+  
+  if (activeHorses >= 4) {
     myHorse3.display();
-    myHorse1.update();
-    myHorse2.update();
     myHorse3.update();
-    if ((distance0 < 30) || (distance1 < 30) || (distance2 < 30) || (distance3 < 30)) {
+    if (distance3 < 30) {
       gameOver = true;
     }
   }
@@ -281,12 +272,11 @@ class MainCharacter {
   }
   
   move(amtX, amtY) {
-    // Calculate new position
-    let newX = this.x + (amtX * this.speed);
-    let newY = this.y + (amtY * this.speed);
+    let newX = this.x + amtX * this.speed;
+    let newY = this.y + amtY * this.speed;
     
-    // Check boundaries and only update if within canvas
-    // Account for character sprite size (approximately 30px offset on each side)
+    // Boundary checking - keep character within canvas bounds
+    // Account for sprite size (30 pixels on each side based on image rendering)
     if (newX >= 30 && newX <= width - 30) {
       this.x = newX;
     }
@@ -297,7 +287,7 @@ class MainCharacter {
   
   update() {
     if (keyIsDown(LEFT_ARROW)) {
-      this.move(-1, 0);
+    this.move(-1, 0);
     }
     if (keyIsDown(RIGHT_ARROW)) {
       this.move(1, 0);
@@ -311,56 +301,57 @@ class MainCharacter {
   }
   
   body() {
-    if (level >= 1 && level < 10){
+    // Character sprite changes based on level ranges
+    if (level <= 33){
       if (keyIsDown(DOWN_ARROW)) {
-        image(pinto_down, this.x-30, this.y-30, pinto_down.width*.4, pinto_down.height*.4);
-      }
-      else if (keyIsDown(UP_ARROW)) {
-        image(pinto_up, this.x-30, this.y-30, pinto_up.width*.4, pinto_up.height*.4);
-      }
-      else if (keyIsDown(LEFT_ARROW)) {
-        image(pinto_left, this.x-30, this.y-30, pinto_left.width*.4, pinto_left.height*.4);
-      }
-      else if (keyIsDown(RIGHT_ARROW)) {
-        image(pinto_right, this.x-30, this.y-30, pinto_right.width*.4, pinto_right.height*.4);
-      }
-      else {
-        image(pinto_down, this.x-30, this.y-30, pinto_down.width*.4, pinto_down.height*.4);
-      }
+      image(pinto_down, this.x-30, this.y-30, pinto_down.width*.4, pinto_down.height*.4);
     }
-    if (level >= 10 && level < 20){
-      if (keyIsDown(DOWN_ARROW)) {
-        image(monet_down, this.x-30, this.y-30, monet_down.width*.4, monet_down.height*.4);
-      }
-      else if (keyIsDown(UP_ARROW)) {
-        image(monet_up, this.x-30, this.y-30, monet_up.width*.4, monet_up.height*.4);
-      }
-      else if (keyIsDown(LEFT_ARROW)) {
-        image(monet_left, this.x-30, this.y-30, monet_left.width*.4, monet_left.height*.4);
-      }
-      else if (keyIsDown(RIGHT_ARROW)) {
-        image(monet_right, this.x-30, this.y-30, monet_right.width*.4, monet_right.height*.4);
-      }
-      else {
-        image(monet_down, this.x-30, this.y-30, monet_down.width*.4, monet_down.height*.4);
-      }
+    else if (keyIsDown(UP_ARROW)) {
+      image(pinto_up, this.x-30, this.y-30, pinto_up.width*.4, pinto_up.height*.4);
     }
-    if (level >= 20){
+    else if (keyIsDown(LEFT_ARROW)) {
+    image(pinto_left, this.x-30, this.y-30, pinto_left.width*.4, pinto_left.height*.4);
+    }
+    else if (keyIsDown(RIGHT_ARROW)) {
+      image(pinto_right, this.x-30, this.y-30, pinto_right.width*.4, pinto_right.height*.4);
+    }
+    else {
+      image(pinto_down, this.x-30, this.y-30, pinto_down.width*.4, pinto_down.height*.4);
+    }
+    }
+    else if (level <= 66){
       if (keyIsDown(DOWN_ARROW)) {
-        image(bruce_down, this.x-30, this.y-30, bruce_down.width*.4, bruce_down.height*.4);
-      }
-      else if (keyIsDown(UP_ARROW)) {
-        image(bruce_up, this.x-30, this.y-30, bruce_up.width*.4, bruce_up.height*.4);
-      }
-      else if (keyIsDown(LEFT_ARROW)) {
-        image(bruce_left, this.x-30, this.y-30, bruce_left.width*.4, bruce_left.height*.4);
-      }
-      else if (keyIsDown(RIGHT_ARROW)) {
-        image(bruce_right, this.x-30, this.y-30, bruce_right.width*.4, bruce_right.height*.4);
-      }
-      else {
-        image(bruce_down, this.x-30, this.y-30, bruce_down.width*.4, bruce_down.height*.4);
-      }
+      image(monet_down, this.x-30, this.y-30, monet_down.width*.4, monet_down.height*.4);
+    }
+    else if (keyIsDown(UP_ARROW)) {
+      image(monet_up, this.x-30, this.y-30, monet_up.width*.4, monet_up.height*.4);
+    }
+    else if (keyIsDown(LEFT_ARROW)) {
+    image(monet_left, this.x-30, this.y-30, monet_left.width*.4, monet_left.height*.4);
+    }
+    else if (keyIsDown(RIGHT_ARROW)) {
+      image(monet_right, this.x-30, this.y-30, monet_right.width*.4, monet_right.height*.4);
+    }
+    else {
+      image(monet_down, this.x-30, this.y-30, monet_down.width*.4, monet_down.height*.4);
+    }
+    }
+    else {
+      if (keyIsDown(DOWN_ARROW)) {
+      image(bruce_down, this.x-30, this.y-30, bruce_down.width*.4, bruce_down.height*.4);
+    }
+    else if (keyIsDown(UP_ARROW)) {
+      image(bruce_up, this.x-30, this.y-30, bruce_up.width*.4, bruce_up.height*.4);
+    }
+    else if (keyIsDown(LEFT_ARROW)) {
+    image(bruce_left, this.x-30, this.y-30, bruce_left.width*.4, bruce_left.height*.4);
+    }
+    else if (keyIsDown(RIGHT_ARROW)) {
+      image(bruce_right, this.x-30, this.y-30, bruce_right.width*.4, bruce_right.height*.4);
+    }
+    else {
+      image(bruce_down, this.x-30, this.y-30, bruce_down.width*.4, bruce_down.height*.4);
+    }
     }
   }
   
@@ -467,15 +458,15 @@ class Treat {
   }
   
   body() {
-    if (level >= 1 && level < 10) {
-      image(treat_apple, this.x-20, this.y-20, treat_apple.width*.1, treat_apple.height*.1);
-    }
-    else if (level >= 10 && level < 20) {
-      image(treat_carrot, this.x-12, this.y-12, treat_carrot.width*.02, treat_carrot.height*.02);
-    }
-    else if (level >= 20) {
-      image(treat_peppermint, this.x-20, this.y-20, treat_peppermint.width*.1, treat_peppermint.height*.1);
-    }
+    if (level <= 33) {
+    image(treat_apple, this.x-20, this.y-20, treat_apple.width*.1, treat_apple.height*.1);
+  }
+  else if (level <= 66) {
+    image(treat_carrot, this.x-12, this.y-12, treat_carrot.width*.02, treat_carrot.height*.02);
+  }
+  else {
+    image(treat_peppermint, this.x-20, this.y-20, treat_peppermint.width*.1, treat_peppermint.height*.1);
+  }
   }
   
   display() {
@@ -485,7 +476,7 @@ class Treat {
   
   isCaught(myCharacter) {
     distanceT = dist(myCharacter.x, myCharacter.y, currentTreat.x, currentTreat.y);
-    
+  
     if ((distanceT < 30)) {
       return true;
     }
@@ -496,55 +487,40 @@ class Treat {
 // Function to display the score
 function displayScore() {
   fill(255);
-  stroke(0);
-  strokeWeight(2);
   textSize(24);
   textAlign(RIGHT, TOP);
-  text("Score: " + score1, width - 20, 60); // Display score at the top right corner
-  noStroke();
+  text("Score: " + score1, width - 10, 50); // Display score at the top right corner
 }
 
 function displayGameOver() {
-   // Dark background to signify the end
+  // Choose game over background based on level ranges
+  let gameOverImg;
+  if (level <= 33) {
+    gameOverImg = gameOver_chihuahua;
+  } else if (level <= 66) {
+    gameOverImg = gameOver_cdmx;
+  } else {
+    gameOverImg = gameOver_nyc;
+  }
   
-  if (level == 0) {
-    text("Level 0 Score: "+ score1, width / 2, height / 2);
-  }
-  else if (level >= 1 && level < 10) {
-    background(gameOver_chihuahua);
-    fill(0);
-    textSize(32);
-    textAlign(CENTER, CENTER);
-    text("GAME OVER", width / 2, -100 + height / 2);
-    text("Score: "+ score1, width / 2, height / 2 +150 );
-  }
-  else if (level >= 10 && level < 20) {
-    background(gameOver_cdmx);
-    fill(0);
-    textSize(32);
-    textAlign(CENTER, CENTER);
-    text("GAME OVER", width / 2, height / 2 - 100);
-    text("GAME OVER", width / 2, -100 + height / 2);
-    text("Score: "+ score1, width / 2, height / 2 -70 );
-  }
-  else {
-    background(gameOver_nyc);
-    fill(0);
-    textSize(32);
-    textAlign(CENTER, CENTER);
-    text("GAME OVER", width / 2, -100 + height / 2);
-    text("Score: "+ score1, width / 2, height / 2 -70 );
-  }
+  background(gameOverImg);
   
   fill(0);
+  textSize(32);
+  textAlign(CENTER, CENTER);
+  text("GAME OVER", width / 2, height / 2 - 100);
+  text("Level Reached: " + level, width / 2, height / 2 - 50);
+  text("Score: " + score1, width / 2, height / 2);
+  
   textSize(16);
-  text("Press Space to Restart", width / 2, height / 2 -130);
+  text("Press Space to Restart", width / 2, height / 2 + 100);
+  
   if ((gameOver) && (keyIsDown(32))) {
     score1 = 0;
-    gameOver = false; 
-    showingTransition = false;
-    transitionTimer = 0;
     level = 0;
+    gameOver = false; 
+    showTransition = false;
+    transitionTimer = 0;
     myCharacter.x = 200;
     myCharacter.y = 200;
   }
