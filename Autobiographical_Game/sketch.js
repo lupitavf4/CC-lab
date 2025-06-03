@@ -104,6 +104,7 @@ function setup() {
 
 function initializeGame() {
   myCharacter = new MainCharacter(200, 200, 5);
+  // Horses start at their original positions
   myHorse0 = new Horse1(39, 140, 2);
   myHorse1 = new Horse2(39, 180, 3);
   myHorse2 = new Horse1(39, 220, 5);
@@ -186,6 +187,9 @@ function displayTransition() {
   if (transitionTimer >= transitionDuration) {
     gameState = "playing";
     transitionTimer = 0;
+    // Reset main character position to center for new level
+    myCharacter.x = 200;
+    myCharacter.y = 200;
   }
 }
 
