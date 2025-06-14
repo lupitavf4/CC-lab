@@ -6,7 +6,47 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.6.0/addons/p5.sound.min.js"></script>
     <script src="Autobiographical_Game/sketch.js"></script>
     <title>Autobiographical Game</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        margin: 2rem;
+      }
+      .container {
+        display: flex;
+        gap: 3rem;
+        align-items: flex-start;
+        flex-wrap: wrap;
+      }
+      .game-frame {
+        width: 600px;
+        height: 600px;
+        box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        border: none;
+      }
+      .text-content {
+        max-width: 600px;
+        flex: 1 1 300px;
+      }
+    </style>
 </head>
 <body>
+  <h1 style="--font-scale: 1.2; line-height: 1.6;">horse treat mini game</h1>
+  <hr>
+  <br>
+
+  <div class="container">
+    <iframe 
+      src="https://lupitavf4.github.io/CC-lab/project7.html"
+      class="game-frame"
+      title="Horse Treat Mini Game"
+      >
+    </iframe>
+
+    <div class="text-content">
+      <span class="text-style-579429">
+        <b>Lorem ipsum dolor sit amet</b>, consectetur adipiscing elit. Ut nisl metus, accumsan id eros id, vehicula tincidunt nisl. Nulla sit amet urna ut mi tempor euismod. Fusce elementum sapien eget elit sodales fringilla. Pellentesque et nulla vel velit malesuada fermentum vitae vitae justo. Nulla dignissim volutpat interdum. Pellentesque at molestie tortor. Proin magna ante, fermentum ac elementum at, lacinia et arcu. Ut nisl metus, accumsan id eros id, vehicula tincidunt nisl.
+      </span>
+    </div>
+  </div>
 </body>
 </html>
