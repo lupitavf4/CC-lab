@@ -7,13 +7,20 @@ let transitionDuration = 120; // frames to show transition
 ////My character
 let myCharacter;
 
-////Variables for the horses - now using arrays
-let horses = []; // Array to hold all horse objects
+////Variables for the horses
+let myHorse0;
+let myHorse1;
+let myHorse2;
+let myHorse3;
+//Variables to move the horses around a perimeter
+let r1, r2 = 0;
+let r_array = [];
 
 ////Variables for the treats 
 let treats = []; // Array to hold all treat objects
 let currentTreat; // To store the current treat to be caught
 
+let distance0, distance1, distance2, distance3, distanceT;
 let score1 = 0; // Initialize the score
 let gameOver = false;
 
@@ -97,37 +104,15 @@ function setup() {
 
 function initializeGame() {
   myCharacter = new MainCharacter(200, 200, 5);
-  
-  // Create horses based on current level
-  createHorsesForLevel(level);
+  // Horses start at their original positions
+  myHorse0 = new Horse1(39, 140, 2);
+  myHorse1 = new Horse2(39, 180, 3);
+  myHorse2 = new Horse1(39, 220, 5);
+  myHorse3 = new Horse1(39, 300, 4);
   
   currentTreat = new Treat(); // Create the first treat
   treats = []; // Clear treats array
   treats.push(currentTreat); // Add the first treat to the array
-}
-
-function createHorsesForLevel(lvl) {
-  horses = []; // Clear existing horses
-  let numHorses = lvl; // Number of horses equals level number
-  
-  // Cap at 100 horses for performance
-  if (numHorses > 100) numHorses = 100;
-  
-  for (let i = 0; i < numHorses; i++) {
-    // Create horses with varied starting positions and speeds
-    let startX = 39 + (i * 20) % 320; // Spread horses across width
-    let startY = 40 + (i * 30) % 320; // Spread horses across height
-    let speed = 2 + random(1, 4) + (level * 0.1); // Varied speeds
-    
-    // Alternate between horse types
-    let horseType = (i % 2 === 0) ? 1 : 2;
-    
-    if (horseType === 1) {
-      horses.push(new Horse1(startX, startY, speed));
-    } else {
-      horses.push(new Horse2(startX, startY, speed));
-    }
-  }
 }
 
 function draw() {
@@ -205,8 +190,6 @@ function displayTransition() {
     // Reset main character position to center for new level
     myCharacter.x = 200;
     myCharacter.y = 200;
-    // Create horses for the new level
-    createHorsesForLevel(level);
   }
 }
 
@@ -218,17 +201,27 @@ function playGame() {
     myCharacter.display();
     myCharacter.body();
     
-    // Update all horses
-    for (let i = 0; i < horses.length; i++) {
-      horses[i].update();
-      horses[i].display();
-      
-      // Check collision with this horse
-      let distance = dist(myCharacter.x, myCharacter.y, horses[i].x, horses[i].y);
-      if (distance < 30) {
-        gameOver = true;
-        break; // Exit loop early if collision detected
-      }
+    // Update horses based on current level
+    myHorse0.update();
+    myHorse0.display();
+    distance0 = dist(myCharacter.x, myCharacter.y, myHorse0.x, myHorse0.y);
+    
+    if (level >= 2) {
+      myHorse1.update();
+      myHorse1.display();
+      distance1 = dist(myCharacter.x, myCharacter.y, myHorse1.x, myHorse1.y);
+    }
+    
+    if (level >= 3) {
+      myHorse2.update();
+      myHorse2.display();
+      distance2 = dist(myCharacter.x, myCharacter.y, myHorse2.x, myHorse2.y);
+    }
+    
+    if (level >= 4) {
+      myHorse3.update();
+      myHorse3.display();
+      distance3 = dist(myCharacter.x, myCharacter.y, myHorse3.x, myHorse3.y);
     }
 
     // Check if the current treat is caught
@@ -240,7 +233,7 @@ function playGame() {
 
       // Check for level progression
       if (score1 % 10 === 0 && score1 > 0) {
-        if (level < 100) { // Changed from 99 to 100
+        if (level < 99) {
           level++;
           gameState = "transition";
           transitionTimer = 0;
@@ -270,10 +263,31 @@ function handleLevel() {
   } else {
     background(background_nyc);
   }
+  
+  // Check collisions based on active horses
+  if (distance0 < 30) {
+    gameOver = true;
+  }
+  
+  if (level >= 2 && distance1 < 30) {
+    gameOver = true;
+  }
+  
+  if (level >= 3 && distance2 < 30) {
+    gameOver = true;
+  }
+  
+  if (level >= 4 && distance3 < 30) {
+    gameOver = true;
+  }
 }
 
 function getHorsesInLevel(lvl) {
-  return Math.min(lvl, 100); // Return level number, capped at 100
+  if (lvl === 1) return 1;
+  if (lvl >= 2 && lvl < 3) return 2;
+  if (lvl >= 3 && lvl < 4) return 3;
+  if (lvl >= 4) return 4;
+  return 1;
 }
 
 class MainCharacter {
@@ -431,9 +445,9 @@ class Horse2 {
 // Treat class to manage treat creation and interaction
 class Treat {
   constructor() {
-    let r1 = random(10, 60);
-    let r2 = random(320, 390);
-    let r_array = [r1, r2];
+    r1 = random(10, 60);
+    r2 = random(320, 390);
+    r_array = [r1, r2];
     
     this.x = random(20, 380);
     
@@ -464,7 +478,7 @@ class Treat {
   }
   
   isCaught(myCharacter) {
-    let distanceT = dist(myCharacter.x, myCharacter.y, this.x, this.y);
+    distanceT = dist(myCharacter.x, myCharacter.y, this.x, this.y);
     return (distanceT < 30);
   }
 }
