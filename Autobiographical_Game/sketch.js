@@ -9,6 +9,11 @@ let myCharacter;
 
 ////Variables for the horses - now using arrays
 let horses = []; // Array to hold all horse objects
+let distances = []; // Array to hold distances to each horse
+
+//Variables to move the horses around a perimeter
+let r1, r2 = 0;
+let r_array = [];
 
 ////Variables for the treats 
 let treats = []; // Array to hold all treat objects
@@ -98,35 +103,34 @@ function setup() {
 function initializeGame() {
   myCharacter = new MainCharacter(200, 200, 5);
   
-  // Create horses based on current level
-  createHorsesForLevel(level);
+  // Initialize horses array based on current level
+  initializeHorses();
   
   currentTreat = new Treat(); // Create the first treat
   treats = []; // Clear treats array
   treats.push(currentTreat); // Add the first treat to the array
 }
 
-function createHorsesForLevel(lvl) {
+function initializeHorses() {
   horses = []; // Clear existing horses
-  let numHorses = lvl; // Number of horses equals level number
+  distances = []; // Clear distances array
   
-  // Cap at 100 horses for performance
-  if (numHorses > 100) numHorses = 100;
+  // Create horses based on current level (level determines number of horses)
+  let numHorses = level;
+  if (numHorses === 0) numHorses = 1; // Always have at least 1 horse
   
   for (let i = 0; i < numHorses; i++) {
-    // Create horses with varied starting positions and speeds
-    let startX = 39 + (i * 20) % 320; // Spread horses across width
-    let startY = 40 + (i * 30) % 320; // Spread horses across height
-    let speed = 2 + random(1, 4) + (level * 0.1); // Varied speeds
+    let startY = 140 + (i * 40); // Spread horses vertically
+    let speed = 2 + i; // Each horse has different speed
     
     // Alternate between horse types
-    let horseType = (i % 2 === 0) ? 1 : 2;
-    
-    if (horseType === 1) {
-      horses.push(new Horse1(startX, startY, speed));
+    if (i % 2 === 0) {
+      horses.push(new Horse1(39, startY, speed));
     } else {
-      horses.push(new Horse2(startX, startY, speed));
+      horses.push(new Horse2(39, startY, speed));
     }
+    
+    distances.push(0); // Initialize distance for this horse
   }
 }
 
@@ -192,7 +196,7 @@ function displayTransition() {
   text("LEVEL " + level, width/2, height/2 - 30);
   
   textSize(20);
-  let horsesInLevel = getHorsesInLevel(level);
+  let horsesInLevel = level; // Now each level = number of horses
   text(horsesInLevel + " horses to avoid!", width/2, height/2 + 20);
   
   textSize(16);
@@ -205,8 +209,8 @@ function displayTransition() {
     // Reset main character position to center for new level
     myCharacter.x = 200;
     myCharacter.y = 200;
-    // Create horses for the new level
-    createHorsesForLevel(level);
+    // Initialize horses for the new level
+    initializeHorses();
   }
 }
 
@@ -218,17 +222,11 @@ function playGame() {
     myCharacter.display();
     myCharacter.body();
     
-    // Update all horses
+    // Update all horses dynamically
     for (let i = 0; i < horses.length; i++) {
       horses[i].update();
       horses[i].display();
-      
-      // Check collision with this horse
-      let distance = dist(myCharacter.x, myCharacter.y, horses[i].x, horses[i].y);
-      if (distance < 30) {
-        gameOver = true;
-        break; // Exit loop early if collision detected
-      }
+      distances[i] = dist(myCharacter.x, myCharacter.y, horses[i].x, horses[i].y);
     }
 
     // Check if the current treat is caught
@@ -240,7 +238,7 @@ function playGame() {
 
       // Check for level progression
       if (score1 % 10 === 0 && score1 > 0) {
-        if (level < 100) { // Changed from 99 to 100
+        if (level < 99) {
           level++;
           gameState = "transition";
           transitionTimer = 0;
@@ -270,10 +268,18 @@ function handleLevel() {
   } else {
     background(background_nyc);
   }
+  
+  // Check collisions with all horses
+  for (let i = 0; i < distances.length; i++) {
+    if (distances[i] < 30) {
+      gameOver = true;
+      break; // Exit loop early if collision detected
+    }
+  }
 }
 
 function getHorsesInLevel(lvl) {
-  return Math.min(lvl, 100); // Return level number, capped at 100
+  return lvl; // Each level has as many horses as the level number
 }
 
 class MainCharacter {
@@ -431,9 +437,9 @@ class Horse2 {
 // Treat class to manage treat creation and interaction
 class Treat {
   constructor() {
-    let r1 = random(10, 60);
-    let r2 = random(320, 390);
-    let r_array = [r1, r2];
+    r1 = random(10, 60);
+    r2 = random(320, 390);
+    r_array = [r1, r2];
     
     this.x = random(20, 380);
     
